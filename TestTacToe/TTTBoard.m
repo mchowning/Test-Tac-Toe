@@ -17,20 +17,20 @@
 
 @implementation TTTBoard
 
-- (NSString *)getPositionAtRow:(NSInteger)row andCol:(NSInteger)col {
+- (NSString *)getPositionAtRow:(NSUInteger)row andCol:(NSUInteger)col {
     if (self.boardSize <= col || self.boardSize <= row) {
         [[NSException exceptionWithName:@"Invalid Position" reason:nil userInfo:nil] raise];
     }
-    NSInteger index = [self getIndexFromRow:row andCol:col];
+    NSUInteger index = [self getIndexFromRow:row andCol:col];
     return self.positions[index];
 }
 
-- (NSInteger)getIndexFromRow:(NSInteger)row andCol:(NSInteger)col {
+- (NSUInteger)getIndexFromRow:(NSUInteger)row andCol:(NSUInteger)col {
     return (3 * row) + col;
 }
 
-- (void)touchBoardAtRow:(NSInteger)row column:(NSInteger)col {
-    NSInteger index = [self getIndexFromRow:row andCol:col];
+- (void)touchBoardAtRow:(NSUInteger)row column:(NSUInteger)col {
+    NSUInteger index = [self getIndexFromRow:row andCol:col];
     if ([self.positions[index] isEqualToString:@""]) {
         self.positions[index] = (self.player1turn) ? @"X" : @"O";
         self.player1turn = !self.player1turn;
@@ -92,7 +92,7 @@
 
 #pragma mark - Lifecycle methods
 
--(id)initWithSize:(NSInteger)size {
+- (id)initWithSize:(NSUInteger)size {
     self = [super init];
     if (self) {
         self.boardSize = size;

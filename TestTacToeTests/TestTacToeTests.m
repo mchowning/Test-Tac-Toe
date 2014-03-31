@@ -3,7 +3,7 @@
 
 SPEC_BEGIN(BoardSpec)
 
-describe(@"Creating board of proper size", ^{
+describe(@"Creating default board of proper size (3x3)", ^{
     
     __block TTTBoard *b;
     
@@ -11,12 +11,15 @@ describe(@"Creating board of proper size", ^{
         b = [[TTTBoard alloc] init];
     });
     
+    it(@"board size", ^{
+        [[theValue(b.boardSize) should] equal:theValue(3)];
+    });
+    
     for (int row = 0; row < 3; row++) {
         for (int col = 0; col < 3; col++) {
             it([NSString stringWithFormat:@"has valid position at %d, %d coordinate", row, col], ^{
                 [[[b getPositionAtRow:row andCol:col] should] equal:@""];
             });
-            
         }
     }
     
@@ -39,6 +42,49 @@ describe(@"Creating board of proper size", ^{
             });
         }
     }
+});
+
+describe(@"Creating non-default board", ^{
+    
+    __block TTTBoard *b;
+    __block NSUInteger boardSize = 5;
+    
+    beforeEach(^{
+        b = [[TTTBoard alloc] initWithSize:boardSize];
+    });
+    
+    for (int row = 0; row < boardSize; row++) {
+        for (int col = 0; col < boardSize; col++) {
+            it([NSString stringWithFormat:@"has valid position at %d, %d coordinate", row, col], ^{
+                [[[b getPositionAtRow:row andCol:col] should] equal:@""];
+            });
+            
+        }
+    }
+    
+    __block NSUInteger maxValidPosition = boardSize - 1;
+    __block NSUInteger invalidPosition = boardSize;
+    
+    it([NSString stringWithFormat:@"has only %d columns", boardSize], ^{
+        void(^testBlock)() = ^{[b getPositionAtRow:maxValidPosition andCol:invalidPosition];};
+        [[theBlock(testBlock) should] raiseWithName:@"Invalid Position"];
+    });
+    
+    
+    it([NSString stringWithFormat:@"has only %d rows", boardSize], ^{
+        void(^testBlock)() = ^{[b getPositionAtRow:invalidPosition andCol:maxValidPosition];};
+        [[theBlock(testBlock) should] raiseWithName:@"Invalid Position"];
+    });
+    
+    for (int row = 0; row < boardSize; row++) {
+        for (int col = 0; col < boardSize; col++) {
+            it([NSString stringWithFormat:@"position %d, %d starts as an empty string", row, col], ^{
+                NSString *cellString = [b getPositionAtRow:row andCol:col];
+                [[cellString should] equal:@""];
+            });
+        }
+    }
+    
 });
 
 describe(@"Touching", ^{
@@ -91,7 +137,7 @@ describe(@"Touching", ^{
     
 });
 
-describe(@"Recognizing win condition of", ^{
+describe(@"Recognizing", ^{
     
     __block TTTBoard *b;
     
@@ -99,7 +145,7 @@ describe(@"Recognizing win condition of", ^{
         b = [[TTTBoard alloc] init];
     });
     
-    it(@"first row with three X's", ^{
+    it(@"first row with three X's is a win", ^{
         [b touchBoardAtRow:0 column:0]; // Place 'X'
         [b touchBoardAtRow:1 column:0];
         [b touchBoardAtRow:0 column:1]; // Place 'X'
@@ -108,7 +154,7 @@ describe(@"Recognizing win condition of", ^{
         [[theValue([b isWin]) should] beTrue];
     });
     
-    it(@"second column with three O's", ^{
+    it(@"second column with three O's is a win", ^{
         [b touchBoardAtRow:0 column:0];
         [b touchBoardAtRow:0 column:1]; // Place O
         [b touchBoardAtRow:0 column:2];
@@ -118,7 +164,7 @@ describe(@"Recognizing win condition of", ^{
         [[theValue([b isWin]) should] beTrue];
     });
     
-    it(@"diagnol win of X's", ^{
+    it(@"diagonal win of X's is a win", ^{
         [b touchBoardAtRow:0 column:0];  // Place X
         [b touchBoardAtRow:0 column:1];
         [b touchBoardAtRow:1 column:1];  // Place X
@@ -128,13 +174,6 @@ describe(@"Recognizing win condition of", ^{
     });
     
     it(@"board with no wins", ^{
-        
-        //   X | O | X
-        //  ---+---+---
-        //   O | O | X
-        //  ---+---+---
-        //   X | X | O
-        
         [b touchBoardAtRow:0 column:0];
         [b touchBoardAtRow:0 column:1];
         [b touchBoardAtRow:0 column:2];
@@ -144,6 +183,13 @@ describe(@"Recognizing win condition of", ^{
         [b touchBoardAtRow:2 column:0];
         [b touchBoardAtRow:2 column:2];
         [b touchBoardAtRow:2 column:1];
+        
+        //   X | O | X
+        //  ---+---+---
+        //   O | O | X
+        //  ---+---+---
+        //   X | X | O
+        
         [[theValue([b isWin]) should] beFalse];
     });
     

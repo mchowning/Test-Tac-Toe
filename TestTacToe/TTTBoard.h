@@ -13,7 +13,8 @@
 @property (nonatomic, readonly) NSUInteger boardSize;
 @property (nonatomic, readonly) BOOL isWin;
 
-- (NSString *)getPositionAtRow:(NSInteger)row andCol:(NSInteger)col;
-- (void)touchBoardAtRow:(NSInteger)row column:(NSInteger)col;
+- (id)initWithSize:(NSUInteger)size;
+- (NSString *)getPositionAtRow:(NSUInteger)row andCol:(NSUInteger)col;
+- (void)touchBoardAtRow:(NSUInteger)row column:(NSUInteger)col;
     
 @end
